@@ -1,0 +1,15 @@
+-- Android shopping list  demo --
+
+This is a small shopping list app demo.
+
+The idea is that when I run out of something I just mark it as "not available" 
+then after I go to the grocery store I check it again as available.
+
+Whenever an item is marked as available or not the status is saved in the local db immediatly
+
+Features :
+
+- Listview with items using a custom viewgroup 
+- Touch gestures (switch toggle using a fling gesture)
+- SQLite DB
+
