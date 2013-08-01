@@ -10,10 +10,12 @@ import java.util.List;
 import com.iaco.android.slideswitchdemo.dto.Item;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 public class ItemListAdapter extends ArrayAdapter<Item> {
 
@@ -68,13 +70,42 @@ public class ItemListAdapter extends ArrayAdapter<Item> {
             
             Item o = items.get(position);
             
+            
             if (o != null) {
-            		Drawable d= getImageFromAssets(o.getPictureName());
+            		
             	    SlideToggle cr = (SlideToggle) v.findViewById(R.id.rowid);
                     cr.mTextTop.setText(o.getName());
                     cr.mTextBottom.setText(o.getDescription());
-                    cr.mImageLeft.setImageDrawable(d);
-                    cr.mImageRight.setImageDrawable(d);
+                    
+                    //Load the images using a background task
+                    //to make the listview scrolling smooth
+                    new AsyncTask<Object,
+                    			  Void, 
+                    			  Drawable>() {
+                    	ImageView imv1 = null;
+                    	ImageView imv2 = null;
+                        @Override
+                        protected Drawable doInBackground(Object... params) {
+                            String imageName = (String)params[0];
+                            Drawable d= getImageFromAssets(imageName);
+                            
+                            imv1 =  (ImageView)params[1];
+                            imv2 =  (ImageView)params[2];
+                            
+                            return d;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Drawable d) {
+                            super.onPostExecute(d);
+                            if (d!= null) {
+                            	imv1.setImageDrawable(d);
+                            	imv2.setImageDrawable(d);
+                            }
+                        }
+                    }.execute(o.getPictureName(),cr.mImageLeft, cr.mImageRight);
+                                        
+                    
                     cr.resetToState(o.getStatus());
                     cr.setStateListener( position, new SlideToggle.StateChangeListener() 
            				{	
